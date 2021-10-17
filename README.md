@@ -1,1 +1,1 @@
-# Global_spread_Listeria_monocytogenes_CC1
+# Global spread Listeria monocytogenes CC1
