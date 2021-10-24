@@ -3,7 +3,7 @@
 #######################################################
 ### Author: Noemie Lefrancq
 ### Date creation: 03/02/2020
-### Last modification: 17/10/2021
+### Last modification: 24/10/2021
 #######################################################
 
 ## Load packages
@@ -71,17 +71,14 @@ data.seq$Combined_lat = data.seq$Country_lat
 data.seq$Combined_long[which(is.na(data.seq$DPT_long) == F)] = data.seq$DPT_long[which(is.na(data.seq$DPT_long) == F)]
 data.seq$Combined_lat[which(is.na(data.seq$DPT_lat) == F)] = data.seq$DPT_lat[which(is.na(data.seq$DPT_lat) == F)]
 
-
-
 ##################################################
 ## Construct matrix: time between infections
 ##################################################
 time_mat = abs(outer(data.seq$Year,data.seq$Year,"-")) ## compute the sampling time difference between all isolates 
-colnames(time_mat) = master.seq.names
-rownames(time_mat) = master.seq.names
+# colnames(time_mat) = master.seq.names
+# rownames(time_mat) = master.seq.names
 diag(time_mat)<-NA ## set the diagonal to NAs.
 ##################################################
-
 ##################################################
 ## Construct matrix: geography (same/different)
 ##################################################
@@ -100,8 +97,8 @@ for (i in levels(data.seq_tmp$Region)){
 }
 n = which(data.seq_tmp$Region == "nd")
 geo_mat_depart_france[n,n] = NA
-colnames(geo_mat_depart_france) = master.seq.names[which(data.seq$Country=='FR')]
-rownames(geo_mat_depart_france) = master.seq.names[which(data.seq$Country=='FR')]
+# colnames(geo_mat_depart_france) = master.seq.names[which(data.seq$Country=='FR')]
+# rownames(geo_mat_depart_france) = master.seq.names[which(data.seq$Country=='FR')]
 diag(geo_mat_depart_france)<-NA
 
 # Matrix Department PARIS in France
@@ -116,8 +113,8 @@ for (i in 'dpt75'){
 }
 n = which(data.seq_tmp$Region == "nd")
 geo_mat_depart_Paris_france[n,n] = NA
-colnames(geo_mat_depart_Paris_france) = master.seq.names[which(data.seq$Country=='FR')]
-rownames(geo_mat_depart_Paris_france) = master.seq.names[which(data.seq$Country=='FR')]
+# colnames(geo_mat_depart_Paris_france) = master.seq.names[which(data.seq$Country=='FR')]
+# rownames(geo_mat_depart_Paris_france) = master.seq.names[which(data.seq$Country=='FR')]
 diag(geo_mat_depart_Paris_france)<-NA
 
 #Matrix countries
@@ -126,8 +123,8 @@ for (i in levels(data.seq$Country)){
   n = which(data.seq$Country == i)
   geo_mat_country[n,n] = 1
 }
-colnames(geo_mat_country) = master.seq.names
-rownames(geo_mat_country) = master.seq.names
+# colnames(geo_mat_country) = master.seq.names
+# rownames(geo_mat_country) = master.seq.names
 diag(geo_mat_country)<-NA
 
 #Matrix continent
@@ -136,8 +133,8 @@ for (i in levels(data.seq$Continent)){
   n = which(data.seq$Continent == i)
   geo_mat_continent[n,n] = 1
 }
-colnames(geo_mat_continent) = master.seq.names
-rownames(geo_mat_continent) = master.seq.names
+# colnames(geo_mat_continent) = master.seq.names
+# rownames(geo_mat_continent) = master.seq.names
 diag(geo_mat_continent)<-NA
 
 ##################################################
@@ -169,8 +166,8 @@ for (i in 1:length(master.seq.names)){
                             rep(data.seq$Combined_long[i], length(master.seq.names)), data.seq$Combined_long)
 }
 diag(geo_mat_km) = NA
-colnames(geo_mat_km) = master.seq.names
-row.names(geo_mat_km) = master.seq.names
+# colnames(geo_mat_km) = master.seq.names
+# row.names(geo_mat_km) = master.seq.names
 
 #Matrix of distances between isolates, at the country scale: only take the coordinates of the centroid into account
 ## each cell corresponds to the distance between isolate i and j
@@ -181,8 +178,8 @@ for (i in 1:length(master.seq.names)){
                                       rep(data.seq$Country_long[i], length(master.seq.names)), data.seq$Country_long)
 }
 diag(geo_mat_km_centroids) = NA
-colnames(geo_mat_km_centroids) = master.seq.names
-row.names(geo_mat_km_centroids) = master.seq.names
+# colnames(geo_mat_km_centroids) = master.seq.names
+# row.names(geo_mat_km_centroids) = master.seq.names
 geo_mat_km_centroids[which(geo_mat_km_centroids == 0)] = NA ## isolates from the same country are not considered in the matrix: NA
 ######################################################################
 
@@ -200,8 +197,8 @@ for (ii in 1:nsim){
   b<-b[which(is.na(b)==F)] ## remove any tip in tree ii that is not present in the master dataset (eg non-human isolates)
   
   gene_mat = matrix(dist.mat,nrow(dist.mat),nrow(dist.mat))[b,b] ## use the matching vector to reorder the matrix, to have comparable matrices across all trees
-  colnames(gene_mat) = master.seq.names ## rename columns
-  rownames(gene_mat) = master.seq.names ## rename columns
+  # colnames(gene_mat) = master.seq.names ## rename columns
+  # rownames(gene_mat) = master.seq.names ## rename columns
   diag(gene_mat)<-NA ## make sure diagonal is NAs
   
   MRCA_mat = (gene_mat - time_mat)/2 # make the genetic matrix independent of the difference in the isolation dates 
@@ -221,7 +218,8 @@ remove(trees)
 ######################################################################
 ## Save dataset and matrices
 ######################################################################
-## Metadata
+## Metadata - some columns are removed for confidentiality reasons - please email the authors for any inquiry 
+data.seq = data.seq[,-c(1,3,8,9,10,11,12,13,14)]
 saveRDS(data.seq, 'metadata_and_matrices/data.seq.rds')
 
 ## Time
@@ -236,5 +234,7 @@ saveRDS(geo_mat_km, 'metadata_and_matrices/geo_mat_km.rds')
 saveRDS(geo_mat_km_centroids, 'metadata_and_matrices/geo_mat_km_centroids.rds')
 
 ## Genetic distances 
-saveRDS(sim.mats, 'metadata_and_matrices/sim.mats.rds')
+for(i in 1:nsim){
+  saveRDS(sim.mats[,,i], paste0('metadata_and_matrices/sim.mats_',i ,'.rds'))
+}
 ######################################################################
