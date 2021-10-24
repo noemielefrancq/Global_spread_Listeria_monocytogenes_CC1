@@ -28,7 +28,11 @@ geo_mat_depart_france = readRDS('metadata_and_matrices/geo_mat_depart_france.rds
 geo_mat_depart_Paris_france = readRDS('metadata_and_matrices/geo_mat_depart_Paris_france.rds')
 geo_mat_km = readRDS('metadata_and_matrices/geo_mat_km.rds')
 ## Genetic distances 
-sim.mats = readRDS('metadata_and_matrices/sim.mats.rds')
+nsim = 100
+sim.mats<-array(NaN,c(nrow(time_mat),nrow(time_mat),nsim))
+for(i in 1:nsim){
+  sim.mats[,,ii] = readRDS(paste0('metadata_and_matrices/sim.mats_',i ,'.rds'))
+}
 
 #####################################################################
 ## Parameters for the computation of the relative risks
